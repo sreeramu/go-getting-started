@@ -20,13 +20,14 @@ func main() {
 	router.Use(gin.Logger())
 
 	router.POST("/", func(c *gin.Context) {
-
-		id := c.Query("id")
-		page := c.DefaultQuery("page", "0")
-		name := c.PostForm("name")
 		message := c.PostForm("message")
+		nick := c.DefaultPostForm("nick", "anonymous")
 
-		fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
+		c.JSON(200, gin.H{
+			"status":  "posted",
+			"message": message,
+			"nick":    nick,
+		})
 	})
 
 	router.Run(":" + port)
