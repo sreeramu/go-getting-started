@@ -1,29 +1,27 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"os"
-
-	"github.com/gin-gonic/gin"
-	_ "github.com/heroku/x/hmetrics/onload"
+    "fmt"
+    "html"
+    "log"
+    "net/http"
 )
 
 func main() {
-	port := os.Getenv("PORT")
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        if r.URL.Path != "/" {
+            http.NotFound(w, r)
+            return
+        }
 
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
+        if r.Method == "GET" {
+            fmt.Fprintf(w, "GET, %q", html.EscapeString(r.URL.Path))
+        } else if r.Method == "POST" {
+            fmt.Fprintf(w, "POST, %q", html.EscapeString(r.URL.Path))
+        } else {
+            http.Error(w, "Invalid request method.", 405)
+        }
+    })
 
-	router := gin.New()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
-
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	})
-
-	router.Run(":" + port)
+    log.Fatal(http.ListenAndServe(":8080", nil))
 }
