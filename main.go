@@ -19,8 +19,14 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	router.POST("/", func(c *gin.Context) {
+
+		id := c.Query("id")
+		page := c.DefaultQuery("page", "0")
+		name := c.PostForm("name")
+		message := c.PostForm("message")
+
+		fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
 	})
 
 	router.Run(":" + port)
